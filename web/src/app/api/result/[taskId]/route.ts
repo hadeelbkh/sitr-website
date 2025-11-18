@@ -4,13 +4,13 @@ const backendBaseUrl = process.env.HIJAB_BACKEND_URL;
 
 export const runtime = "nodejs";
 
-interface RouteContext {
-  params: {
+type RouteContext = {
+  params: Promise<{
     taskId: string;
-  };
-}
+  }>;
+};
 
-export async function GET(_req: NextRequest, { params }: RouteContext) {
+export async function GET(_req: NextRequest, context: RouteContext) {
   if (!backendBaseUrl) {
     return NextResponse.json(
       { error: "Missing HIJAB_BACKEND_URL configuration." },
@@ -18,7 +18,7 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
     );
   }
 
-  const { taskId } = params;
+  const { taskId } = await context.params;
 
   if (!taskId) {
     return NextResponse.json(
